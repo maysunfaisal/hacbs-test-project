@@ -24,6 +24,10 @@ components:
         rootRequired: false
   - name: outerloop-deploy
     kubernetes:
+      endpoints:
+        - name: http-8081
+          targetPort: 8081
+          path: /
       inlined: |-
         kind: Deployment
         apiVersion: apps/v1
@@ -50,6 +54,19 @@ components:
                     limits:
                       memory: "1024Mi"
                       cpu: "500m"
+        ---
+        kind: Service
+        apiVersion: v1
+        metadata:
+          name: hacbs-jvm-build-test-project
+        spec:
+          ports:
+            - name: http-8081
+              port: 8081
+              protocol: TCP
+              targetPort: 8081
+          selector:
+            app: hacbs-jvm-build-test-project
 commands:
   - id: build-image
     apply:
